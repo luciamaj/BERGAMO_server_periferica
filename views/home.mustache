@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>REST API</title>
+  <link rel="stylesheet" href="/css/boot.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+</head>
+
+<body>
+  <h1 class="page-title">{{info.info.name}}</h1>
+  <div class="container page">
+    <div class="row">
+      <div class="col-md-6">
+        <h3>config.ini</h3>
+        <ul>
+          <li><span class="titoletto">Debug: </span>{{info.info.debug}}</li>
+          <li><span class="titoletto">Centrale: </span>{{info.connection.centrale}}</li>
+          <li><span class="titoletto">Path aggiornamento GIT: </span>{{info.git.path}}</li>
+          <li><span class="titoletto">Percorso app di backup: </span>{{info.app.backupAppUrl}}</li>
+          <li><span class="titoletto">Porta: </span>{{info.connection.io}}</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h3>config da centrale</h3>
+        <ul>
+          <li><span class="titoletto">Ultimo aggiornamento: </span>{{backupConfig.data_aggiornamento}}</li>
+          <li><span class="titoletto">Ip: </span>{{backupConfig.ip}}</li>
+          <li><span class="titoletto">MACAddress: </span>{{backupConfig.mac}}</li>
+          <li><span class="titoletto">Applicazione da aprire: </span>{{backupConfig.app}}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <h3>Reboot</h3>
+        <div class="col-md-6">
+          <pre><code>GET /service/reboot</code></pre>
+        </div>
+        <div class="col-md-6">
+          <h4>Response</h4>
+          <textarea class="reboot-response form-control"></textarea>
+          <form data-url='{{backupConfig.ip}}' data-port='{{info.connection.io}}' id="reboot">
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+      <h3>Shut down</h3>
+        <div class="col-md-6">
+          <pre><code>GET /service/shut-down</code></pre>
+        </div>
+        <div class="col-md-6">
+          <h4>Response</h4>
+          <textarea class="shut-down-response form-control"></textarea>
+          <form data-url='{{backupConfig.ip}}' data-port='{{info.connection.io}}' id="shut-down">
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+        </div>
+    </div>
+    <div class="row">
+      <h3>Sync</h3>
+        <div class="col-md-6">
+          <pre><code>GET /service/sync</code></pre>
+        </div>
+        <div class="col-md-6">
+          <h4>Response</h4>
+          <textarea class="sync-response form-control"></textarea>
+          <form data-url='{{backupConfig.ip}}' data-port='{{info.connection.io}}' data-url='{{backupConfig.ip}}' id="sync">
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+        </div>
+    </div>
+    <div>
+      <a href="/log/log.txt" download>DOWNLOAD LOG FILE</a>
+    </div>
+  </div>
+  <script type="text/javascript">
+    // PLACEHOLDER NEW SET      
+
+    $("#reboot").submit(function (e) {
+      e.preventDefault();
+      let url = $("#reboot").data('url');
+      let port = $("#reboot").data('port');
+
+      if (url) {
+          $.ajax({
+          type: "GET",
+          url: "http://" + url + ":" + port + "/service/reboot",
+          contentType: "application/json",
+          dataType: "json",
+          success: function (data, status, jqXHR) {
+            $('.reboot-response').text(JSON.stringify(data));
+          },
+          error: function (jqXHR, status) {
+            console.log(status);
+            $('.reboot-response').text(status);
+          }
+        });
+      }
+    });
+
+    $("#shut-down").submit(function (e) {
+      e.preventDefault();
+      let url = $("#reboot").data('url');
+      let port = $("#reboot").data('port');
+
+      if (url) {
+        var formData = $(this).serializeObject();
+        $.ajax({
+          type: "GET",
+          url: "http://" + url + ":" + port +  "/service/shut-down",
+          contentType: "application/json",
+          dataType: "json",
+          success: function (data, status, jqXHR) {
+            $('.shut-down-response').text(JSON.stringify(data));
+          },
+          error: function (jqXHR, status) {
+            console.log(status);
+            $('.shut-down-response').text(status);
+          }
+        });
+      }
+    });
+
+    $("#sync").submit(function (e) {
+      e.preventDefault();
+      let url = $("#reboot").data('url');
+      let port = $("#reboot").data('port');
+
+      if (url) {
+      var formData = $(this).serializeObject();
+        $.ajax({
+          type: "GET",
+          url: "http://" + url + ":" + port +  "/service/sync",
+          contentType: "application/json",
+          dataType: "json",
+          success: function (data, status, jqXHR) {
+            $('.sync-response').text(JSON.stringify(data));
+          },
+          error: function (jqXHR, status) {
+            console.log(status);
+            $('.sync-response').text(status);
+          }
+        });
+      }
+    });
+
+    $.fn.serializeObject = function () {
+      var o = {};
+      var a = this.serializeArray();
+      $.each(a, function () {
+        if (o[this.name] !== undefined) {
+          if (!o[this.name].push) {
+            o[this.name] = [o[this.name]];
+          }
+          o[this.name].push(this.value || '');
+        } else {
+          o[this.name] = this.value || '';
+        }
+      });
+      return o;
+    };
+  </script>
+</body>
+</html>
