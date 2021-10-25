@@ -44,6 +44,8 @@ app.use(bodyParser.json());
 // FINE EXPRESS
 
 let centrale = ioclient(configIni.connection.centrale);
+let mappa = ioclient(configIni.configuration.mappa);
+
 let port = configIni.connection.io;
 let clientSocket = null;
 
@@ -76,11 +78,11 @@ const io = require('socket.io')(server, {
 });
 
 //  MARK - WEBSOCKET METHODS
-centrale.on('connect', function () {
+mappa.on('connect', function () {
     fsUtilites.writeLogFile("connected to central");
     console.log(`connected to central`);
 
-    centrale.emit('periferica', {'color': configIni.configuration.name, 'nome': configIni.configuration.name});
+    mappa.emit('periferica', {'color': configIni.configuration.name, 'nome': configIni.configuration.name});
     emitPeriferica();
 });
 
@@ -92,24 +94,6 @@ centrale.on("connect_error", async function () {
     }
 });
 
-centrale.on('url-dashboard', function (url) {
-    if (client) {
-        fsUtilites.writeLogFile("url-dashboard");
-        client.emit('url', url);
-    } else {
-        console.log('CLIENT NOT FOUND');
-    }
-});
-
-centrale.on('exit-dashboard', function () {
-    if (client) {
-        fsUtilites.writeLogFile("exit");
-        client.emit('exit');
-    } else {
-        fsUtilites.writeLogFile("CLIENT NOT FOUND");
-        console.log('CLIENT NOT FOUND');
-    }
-});
 
 centrale.on('reset', function () {
     if (client) {
@@ -185,22 +169,22 @@ io.on('connection', function (socket) {
     });
 
     socket.on('logoPage', function() {
-        centrale.emit('logo', {'color': configIni.configuration.color, 'nome': configIni.configuration.name});
+        mappa.emit('logo', {'color': configIni.configuration.color, 'nome': configIni.configuration.name});
         console.log("LogoPage");
     });
 
     socket.on('showME', function() {
-        centrale.emit('showME', {'color': configIni.configuration.color, 'nome': configIni.configuration.name});
+        mappa.emit('showME', {'color': configIni.configuration.color, 'nome': configIni.configuration.name});
         console.log("showME");
     });
 
     socket.on('approfondimento', function() {
-        centrale.emit('approfondimento', {'color': configIni.configuration.color, 'nome': configIni.configuration.name});
+        mappa.emit('approfondimento', {'color': configIni.configuration.color, 'nome': configIni.configuration.name});
         console.log("Appro");
     });
 
     socket.on('mouseClick', function() {
-        centrale.emit('mouseClick', {'color': configIni.configuration.color, 'nome': configIni.configuration.name});
+        mappa.emit('mouseClick', {'color': configIni.configuration.color, 'nome': configIni.configuration.name});
         console.log("click");
     });
 
