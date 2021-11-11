@@ -9,7 +9,6 @@ const fs = require('fs');
 const ini = require('ini');
 const configIni = ini.parse(fs.readFileSync(__basedir + "/config.ini", 'utf-8'));
 const fsUtilites = require('./modules/fs-utilities.js');
-const path = require('path');
 var ping = require('ping');
 var cors = require('cors');
 
@@ -57,6 +56,7 @@ const baseAppUrl = configIni.app.baseUrl;
 // VARIABILI DI RUNTIME
 let isAppOffline = true;
 let socketError = false;
+let mappaSocketError = false;
 
 //INFO TO SEND TO CENTRALE
 let infoDebug = {
@@ -114,6 +114,12 @@ mappa.on('reset', function () {
     } else {
         console.log('CLIENT NOT FOUND');
     }
+});
+
+mappa.on("connect_error", async function () {
+    fsUtilites.writeLogFile("MAPPA è OFFLINE");
+    console.log("MAPPA è OFFLINE");
+    mappaSocketError = true;
 });
 
 centrale.on("connect_error", async function () {
