@@ -92,25 +92,25 @@ centrale.on("connect", function () {
 });
 
 mappa.on('url-dashboard', function (url) {
-    if (client) {
-        client.emit('url', url);
+    if (clientSocket) {
+        clientSocket.emit('url', url);
     } else {
         console.log('CLIENT NOT FOUND');
     }
 });
 
 mappa.on('exit-dashboard', function () {
-    if (client) {
-        client.emit('exit');
+    if (clientSocket) {
+        clientSocket.emit('exit');
     } else {
         console.log('CLIENT NOT FOUND');
     }
 });
 
 mappa.on('reset', function () {
-    if (client) {
+    if (clientSocket) {
         console.log("reset");
-        client.emit('reset');
+        clientSocket.emit('reset');
     } else {
         console.log('CLIENT NOT FOUND');
     }
@@ -189,8 +189,8 @@ io.on('connection', function (socket) {
     socket.on('client', function() {
         fsUtilites.writeLogFile('sono inside');
         isAppOffline = false;
-        client = socket;
-        client.emit('configuration', {'color': configIni.configuration.name, 'nome': configIni.configuration.name});
+        clientSocket = socket;
+        clientSocket.emit('configuration', {'color': configIni.configuration.name, 'nome': configIni.configuration.name});
         emitPeriferica();
     });
 
