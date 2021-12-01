@@ -122,6 +122,15 @@ mappa.on("connect_error", async function () {
     mappaSocketError = true;
 });
 
+mappa.on("first_movement", function() {
+    if (clientSocket) {
+        console.log("first_movement");
+        clientSocket.emit('first_movement');
+    } else {
+        console.log('CLIENT NOT FOUND');
+    }
+});
+
 centrale.on("connect_error", async function () {
     if (!socketError) {
         fsUtilites.writeLogFile("CENTRALE è OFFLINE");
